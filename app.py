@@ -69,8 +69,7 @@ def signup():
     if password != password_confirm:
         flash('Password and confirmation do not match.')
         return redirect('/signup')
-
-
+    
     response = requests.post(verify_url, data={
         'secret': secret,
         'response': token
@@ -104,7 +103,7 @@ def login():
             flash("Please fill in all fields.", "error")
             return redirect('/login')
 
-# DB에 저장된 회원정보와 사용자 입력 값 비교
+# DB에 저장된 회원정보와 사용자 입력 값 처리
         with conn.cursor() as cursor:
             sql = "SELECT * FROM users WHERE username=%s"
             cursor.execute(sql, (username, ))
@@ -121,6 +120,8 @@ def login():
     else: 
         return render_template('login.html')
 
+# signup.html의 중복 검사 버튼 클릭 시 실행.
+# 만약 DB에 이미 존재하는 username이 있을 경우 True 값을 signup.html으로 전달
 @app.route('/check-username')
 def check_username():
     username = request.args.get('username', '').strip()
@@ -186,7 +187,7 @@ def write():
         return redirect('/board')
     return render_template('new_post.html')
 
-
+# edit route 접속 시 해당 posts에 저장되었던 DB 내용을 다시 UPDATE 함.
 @app.route('/edit/<int:post_id>', methods=['GET', 'POST'])
 def edit_post(post_id):
     if 'username' not in session:
@@ -209,7 +210,7 @@ def edit_post(post_id):
             flash('Purple edited successfully.', "success")
             return redirect('/')
         
-        # GET 요청일 때, 기존 게시글 불러오기
+# 게시글이 없을 때 URL 접속 시 This Purple doesn't exist.를 출력하며 root route로 redirect.
         sql = "SELECT * FROM posts WHERE id=%s"
         cursor.execute(sql, (post_id,))
         post = cursor.fetchone()
@@ -218,6 +219,7 @@ def edit_post(post_id):
             return redirect('/')
     return render_template('edit_post.html', post=post)
 
+# 게시글 삭제 기능. DB의 posts 테이블의 내용을 삭제함.
 @app.route('/delete/<int:post_id>', methods=['GET'])
 def delete_post(post_id):
     if 'username' not in session:
@@ -232,6 +234,7 @@ def delete_post(post_id):
     flash('Purple deleted successfully.', "success")
     return redirect('/board')
 
+# 게시글 접속 시 DB의 posts 테이블에서 내용을 가져와 view_port.html을 반환.
 @app.route('/post/<int:post_id>', methods=['GET'])
 def view_post(post_id):
     if 'username' not in session:
