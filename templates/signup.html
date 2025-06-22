@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Purple Board</title>
+
+<!--favicon 설정 및 웹 폰트 Noto Sans KR 적용-->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='1.01em' font-size='85'>🟣</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      background-color: #fff;
+      max-width: 700px;
+      margin: 60px auto;
+      padding: none;
+      color: #222;
+    }
+
+    .form-wrapper label {
+      color: #8C0EDF;
+      font-weight: 600;
+    }
+
+/*checkbox와 text 간격 조절 및 수직 정렬*/
+    input[type="checkbox"] {
+      transform: scale(1.3);
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    .form-wrapper {
+    background-color: #fff;
+    border: 2px solid #8C0EDF;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 0 5px #CEBCE0;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    input {
+      padding: 10px 12px;
+      font-size: 1rem;
+      border: 1px solid #c5c5c5;
+      border-radius: 6px;
+      background-color: #fff;
+      transition: border-color 0.3s;
+      box-shadow: 0 0 3px #ebebeb;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #8C0EDF;
+      box-shadow: 0 0 5px #CEBCE0;
+    }
+
+    button {
+      padding: 12px;
+      font-size: 14px;
+      background-color: #8C0EDF;
+      color: #fff;
+      border: 2px solid #8C0EDF;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #fff;
+      color: #8C0EDF;
+      border: 2px solid #8C0EDF;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: #8C0EDF;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .back-link:hover {
+      color: #5c0aaf;
+    }
+
+    .inline-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .inline-group input {
+      flex: 1;
+    }
+
+    .agree-wrapper {
+      display: flex;
+      align-items: center;
+      margin-top: 12px;
+      margin-bottom: 16px;
+
+    }
+
+    #flash-message-success {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #F6F0FA;               /* 연한 보라 배경 */
+      border: 1px solid #8C0EDF;         /* 진한 보라 테두리 */
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(140, 14, 223, 0.2); /* 보라색 그림자 */
+      font-size: 14px;       
+      font-weight: 600;      
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    #flash-message-success p {
+      margin: 0;
+      font-weight: 600;
+      color: #8C0EDF;                   /* 텍스트도 보라색 */
+    }
+
+    #flash-message-error {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #FFF0F0;               /* 부드러운 연한 붉은색 */
+      border: 1px solid #CC4444;         /* 붉은 테두리 */
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(204, 68, 68, 0.15); /* 붉은 그림자 */
+      font-size: 14px;           /* ✅ 통일된 폰트 크기 */
+      font-weight: 600;      
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    #flash-message-error p {
+      margin: 0;
+      font-weight: 600;
+      color: #BB2222;                   /* 글자는 진한 붉은색 */
+    }
+  </style>
+</head>
+<body>
+
+<!-- Flask에서 전달하는 flash 메시지 표시 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        {% if category == 'success' %}
+          <div id="flash-message-success"><p>{{ msg }}</p></div>
+        {% elif category == 'error' %}
+          <div id="flash-message-error"><p>{{ msg }}</p></div>
+        {% else %}
+          <div><p>{{ msg }}</p></div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="form-wrapper">
+    <form id="signup-form" action="/signup" method="POST">
+      <label for="fullname">Full Name</label>
+      <input type="text" id="fullname" name="fullname" required />
+
+      <label for="username">Username</label>
+      <div class="inline-group">
+        <input type="text" id="username" name="username" required />
+        <button type="button" id="check-id-btn">Check</button>
+      </div>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required />
+
+      <label for="password_confirm">Confirm Password</label>
+      <input type="password" id="password_confirm" name="password_confirm" required />
+
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" required />
+      
+      <div class="agree-wrapper">
+          <input type="checkbox" id="agree" name="agree" />
+          <label for="agree" cursor: pointer; margin-left: 8px;">I agree to the Terms and Conditions.</label>
+      </div>
+      <div class="g-recaptcha" data-sitekey="6LdXi2grAAAAAEjRx15LuMmdYblxYw4vAtkEyCjM"></div>
+      <button type="submit">Sign Up</button>
+      <a href="/" class="back-link">&#x276E; Back to Main</a>
+    </form>
+  </div>
+
+<!-- Google reCAPTCHA 기능 웹페이지에 추가 -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script>
+  let isIdChecked = false;
+  let lastCheckedUsername = '';
+
+// username이 입력되지 않았을 때 'Please enter a username.'을 alert
+  document.getElementById('check-id-btn').addEventListener('click', function() {
+    const usernameInput = document.getElementById('username');
+    const username = usernameInput.value.trim();
+
+    if (!username) {
+      alert('Please enter a username.');
+      return;
+    }
+
+// /check-username?username route에서 받은 data.exists 값이 참일 경우 'This username is already taken.'을 alert
+// /check-username?username route에서 받은 data.exists 값이 거짓일 경우 'This username is available!'을 alert
+    fetch('/check-username?username=' + encodeURIComponent(username))
+      .then(response => response.json())
+      .then(data => {
+        if (data.exists) {
+          alert('This username is already taken.');
+          isIdChecked = false;
+        } else {
+          alert('This username is available!');
+          isIdChecked = true;
+          lastCheckedUsername = username;
+        }
+      })
+// error 발생 시 'Oops! A server error occurred.'을 alert 
+      .catch(error => {
+        alert('Oops! A server error occurred.');
+        console.error(error);
+        isIdChecked = false;
+      });
+  });
+
+  // username 입력이 바뀔 때마다 isIdChecked를 false로 설정하여 중복 check 버튼 클릭 초기화
+  document.getElementById('username').addEventListener('input', function() {
+    isIdChecked = false;
+  });
+
+// submit을 클릭시 다음의 기능을 실행. 
+  document.getElementById('signup-form').addEventListener('submit', function(e) {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const passwordConfirm = document.getElementById('password_confirm').value;
+    const agree = document.getElementById('agree').checked;
+
+// Username 중복 검사를 하지 않은 경우 alert
+    if (!isIdChecked || username !== lastCheckedUsername) {
+      e.preventDefault();
+      alert('Please perform the username availability check.');
+      return;
+    }
+
+// 클라이언트 측 회원가입 패스워드 확인
+    if (password !== passwordConfirm) {
+      e.preventDefault();
+      alert('Password and confirmation do not match.');
+    }
+
+// checkbox를 check 하지 않은 경우 alert
+    if (!agree) {
+      e.preventDefault();
+      alert('You must agree to the Terms and Conditions to sign up.');
+      return;
+    }
+  });
+</script>
+</body>
+</html>
