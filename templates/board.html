@@ -1,3 +1,4 @@
+<!--HTML5 문서 선언-->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -8,6 +9,8 @@
 <!--favicon 설정 및 웹 폰트 Noto Sans KR 적용-->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='1.01em' font-size='85'>🟣</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+
+<!--글꼴, 폰트 크기, 마진색, 패딩 등 스타일 지정-->
   <style>
     body {
       font-family: 'Noto Sans KR', sans-serif;
@@ -20,6 +23,7 @@
       color: #222;
     }
 
+/* 게시판 테두리에 대한 스타일 지정*/
     .board-wrapper {
       background-color: #fff;
       border: 2px solid #8C0EDF;
@@ -28,6 +32,7 @@
       box-shadow: 0 0 5px #CEBCE0;
     }
 
+/* 게시판 테이블에 대한 스타일 지정*/
     table {
       width: 100%;
       border-collapse: collapse;
@@ -61,6 +66,7 @@
       text-align: center;
     } 
 
+/* <a> 태그에 대한 스타일 지정 */
     .actions a {
       margin-right: 8px;
       color: #8C0EDF;
@@ -94,6 +100,7 @@
       background-color: #fff;
       color: #8C0EDF;
     }
+
 /* back-link css 디자인 */
     .back-link {
       display: inline-block;
@@ -106,7 +113,8 @@
     .back-link:hover {
       color: #5c0aaf;
     }
-/* flash-message css 디자인 */
+
+/* flash-message(success) css 디자인 */
     #flash-message-success {
       position: fixed;
       top: 60px;
@@ -132,6 +140,7 @@
       color: #8C0EDF;
     }
 
+/* flash-message(error) css 디자인 */    
     #flash-message-error {
       position: fixed;
       top: 60px;
@@ -196,8 +205,7 @@
         <tr>
           <td><a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a></td>
           <td>{{ post.author }}</td>
-          <td>{{ post.created_at }}</td>
-          </td>
+          <td>{{ post.created_at_display }}</td>
         </tr>
         {% else %}
         <tr>
@@ -207,6 +215,22 @@
       </tbody>
     </table>
 
+<!-- 게시판 검색 폼 -->
+    <form method="get" action="/board" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <select name="category" style="padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; background-color: #fff;">
+          <option value="all" {% if category == 'all' %}selected{% endif %}>Title + Content</option>
+          <option value="title" {% if category == 'title' %}selected{% endif %}>Title only</option>
+          <option value="content" {% if category == 'content' %}selected{% endif %}>Content only</option>
+        </select>
+      <input type="text" name="keyword" placeholder="Enter keyword" value="{{ keyword | default('') }}"
+            style="flex: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px;" />
+
+      <button type="submit"
+              style="padding: 8px 20px; background-color: #8C0EDF; color: #fff; border: none;
+                    border-radius: 6px; font-weight: 600; cursor: pointer;">
+        Search
+      </button>
+    </form>
     <a href="/write" class="button">Write a Purple</a>
     <a href="/" class="back-link">&#x276E; Back to Main</a>
   </div>

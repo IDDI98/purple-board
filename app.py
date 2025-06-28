@@ -149,21 +149,38 @@ def board():
         flash('You must be logged in.', "error")
         return redirect('/login')
 
+    keyword = request.args.get('keyword', '').strip()
+    category = request.args.get('category', 'all')
+
     with conn.cursor() as cursor:
         sql = """
             SELECT 
                 id, title, content, author,
                 CASE
-                    WHEN DATE(created_at) = CURDATE() THEN DATE_FORMAT(created_at, '%H:%i')
-                    ELSE DATE_FORMAT(created_at, '%y/%m/%d')
-                END AS created_at
+                    WHEN DATE(created_at) = CURDATE() THEN DATE_FORMAT(created_at, '%%H:%%i')
+                    ELSE DATE_FORMAT(created_at, '%%y/%%m/%%d')
+                END AS created_at_display
             FROM posts
-            ORDER BY created_at DESC
         """
-        cursor.execute(sql)
-        posts = cursor.fetchall()
-    return render_template('board.html', posts=posts)
+        values = []
 
+        if keyword:
+            if category == 'title':
+                sql += " WHERE title LIKE %s"
+                values.append(f"%{keyword}%")
+            elif category == 'content':
+                sql += " WHERE content LIKE %s"
+                values.append(f"%{keyword}%")
+            else:
+                sql += " WHERE title LIKE %s OR content LIKE %s"
+                values.extend([f"%{keyword}%", f"%{keyword}%"])
+
+        sql += " ORDER BY posts.created_at DESC"
+
+        cursor.execute(sql, values)
+        posts = cursor.fetchall()
+
+    return render_template('board.html', posts=posts, keyword=keyword, category=category)
 
 # 게시판 접속 시 로그인 여부 검증
 # 게시글 작성 폼 및 제출
@@ -186,6 +203,19 @@ def write():
         flash('Purple submitted successfully.',"success")
         return redirect('/board')
     return render_template('new_post.html')
+
+# 게시글 접속 시 DB의 posts 테이블에서 내용을 가져와 view_port.html을 반환.
+@app.route('/post/<int:post_id>', methods=['GET'])
+def view_post(post_id):
+    if 'username' not in session:
+        flash('You must be logged in.', "error")
+        return redirect('/login')
+
+    with conn.cursor() as cursor:
+        sql = "SELECT id, title, content, author, created_at FROM posts WHERE id = %s"
+        cursor.execute(sql, (post_id,))
+        post = cursor.fetchone() 
+    return render_template('view_post.html', post=post)
 
 # edit route 접속 시 해당 posts에 저장되었던 DB 내용을 다시 UPDATE 함.
 @app.route('/edit/<int:post_id>', methods=['GET', 'POST'])
@@ -234,19 +264,5 @@ def delete_post(post_id):
     flash('Purple deleted successfully.', "success")
     return redirect('/board')
 
-# 게시글 접속 시 DB의 posts 테이블에서 내용을 가져와 view_port.html을 반환.
-@app.route('/post/<int:post_id>', methods=['GET'])
-def view_post(post_id):
-    if 'username' not in session:
-        flash('You must be logged in.', "error")
-        return redirect('/login')
-
-    with conn.cursor() as cursor:
-        sql = "SELECT id, title, content, author, created_at FROM posts WHERE id = %s"
-        cursor.execute(sql, (post_id,))
-        post = cursor.fetchone() 
-    return render_template('view_post.html', post=post)
-
 if __name__ == "__main__":
-    app.run()
-
+    app.run(host='0.0.0.0', port=5000, debug=True)
