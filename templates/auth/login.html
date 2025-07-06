@@ -5,91 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Purple Board</title>
 
-<!--favicon 설정 및 웹 폰트 Noto Sans KR 적용-->
+  <!-- favicon & font -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='1.01em' font-size='85'>🟣</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+
   <style>
-    body {
-      font-family: 'Noto Sans KR', sans-serif;
-      font-size: 13px;
-      line-height: 1.5;
-      background-color: #fff;
-      max-width: 700px;
-      margin: 60px auto;
-      padding: 50px;
-      color: #222;
+    body{
+      font-family:'Noto Sans KR',sans-serif;
+      font-size:13px;line-height:1.5;
+      background:#fff;max-width:700px;
+      margin:60px auto;padding:50px;color:#222;
+    }
+    .form-wrapper{
+      background:#fff;border:2px solid #8C0EDF;
+      border-radius:12px;padding:30px 20px;
+      box-shadow:0 0 5px #CEBCE0;
+    }
+    .form-wrapper label{color:#8C0EDF;font-weight:600}
+    form{display:flex;flex-direction:column;gap:16px}
+    input{
+      padding:10px 12px;font-size:1rem;
+      border:1px solid #c5c5c5;border-radius:6px;
+      background:#fff;transition:border-color .3s;
+      box-shadow:0 0 3px #ebebeb;
+    }
+    input:focus{outline:none;border-color:#8C0EDF;box-shadow:0 0 5px #CEBCE0}
+    button{
+      padding:12px;font-size:14px;background:#8C0EDF;
+      color:#fff;border:2px solid #8C0EDF;border-radius:6px;
+      cursor:pointer;font-weight:600;transition:.3s;
+    }
+    button:hover{background:#fff;color:#8C0EDF}
+    .back-link{
+      color:#8C0EDF;font-weight:600;text-decoration:none;
+      transition:.3s ease;display:inline-block;
+    }
+    .back-link:hover{color:#5c0aaf}
+
+    .link-group{
+      display:flex;           
+      align-items:center;      
+      gap:8px;                  
     }
 
-    .form-wrapper {
-    background-color: #fff;
-    border: 2px solid #8C0EDF;
-    border-radius: 12px;
-    padding: 30px 20px;
-    box-shadow: 0 0 5px #CEBCE0;
-    }
 
-    .form-wrapper label {
-      color: #8C0EDF;
-      font-weight: 600;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    label {
-      font-weight: 600;
-      color: #222;
-    }
-
-    input {
-      padding: 10px 12px;
-      font-size: 1rem;
-      border: 1px solid #c5c5c5;
-      border-radius: 6px;
-      background-color: #fff;
-      transition: border-color 0.3s;
-      box-shadow: 0 0 3px #ebebeb;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: #8C0EDF;
-      box-shadow: 0 0 5px #CEBCE0;
-    }
-
-/* button css 디자인 */
-    button {
-      padding: 12px;
-      font-size: 14px;
-      background-color: #8C0EDF;
-      color: #fff;
-      border: 2px solid #8C0EDF;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #fff;
-      color: #8C0EDF;
-      border: 2px solid #8C0EDF;
-    }
-
-/* back-link css 디자인 */
-    .back-link {
-      display: inline-block;
-      color: #8C0EDF;
-      font-weight: 600;
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
-
-    .back-link:hover {
-      color: #5c0aaf;
+    .right-links{
+      margin-left:auto;   
+      display:flex;
+      gap:8px;    
     }
 
 /* flash-message css 디자인 */
@@ -146,22 +109,20 @@
 </head>
 <body>
 
-<!-- Flask에서 전달하는 flash 메시지 표시 -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, msg in messages %}
-        {% if category == 'success' %}
-          <div id="flash-message-success"><p>{{ msg }}</p></div>
-        {% elif category == 'error' %}
-          <div id="flash-message-error"><p>{{ msg }}</p></div>
-        {% else %}
-          <div><p>{{ msg }}</p></div>
-        {% endif %}
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, msg in messages %}
+      {% if category == 'success' %}
+        <div id="flash-message-success"><p>{{ msg }}</p></div>
+      {% elif category == 'error' %}
+        <div id="flash-message-error"><p>{{ msg }}</p></div>
+      {% else %}
+        <div><p>{{ msg }}</p></div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 
-<!-- CSS 디자인을 위한 클래스 정의 -->
   <div class="form-wrapper">
     <form method="POST" action="/login">
       <label for="username">Username</label>
@@ -169,13 +130,22 @@
 
       <label for="password">Password</label>
       <input type="password" id="password" name="password" required>
+
       <button type="submit">Login</button>
-      <a href="/" class="back-link">&#x276E; Back to Main</a>
+
+      <div class="link-group">
+        <a href="/" class="back-link">&#x276E; Back to Main</a>
+
+        <div class="right-links">
+          <a href="/forgot-id" class="back-link">Forgot username?</a>
+          <a href="/forgot-password" class="back-link">Forgot password?</a>
+        </div>
+      </div>
     </form>
   </div>
 
-<!-- 페이지 로드 후 flash 메시지 1.5초(1500ms) 뒤에 숨기기 -->
 <script>
+
 window.onload = function() {
   const flash_s = document.getElementById('flash-message-success');
   const flash_e = document.getElementById('flash-message-error');
@@ -197,6 +167,14 @@ window.onload = function() {
       }, 500);
     }, 1500);
   }
+}
+
+window.onload=function(){
+  const s=document.getElementById('flash-message-success');
+  const e=document.getElementById('flash-message-error');
+  [s,e].forEach(f=>{
+    if(f){setTimeout(()=>{f.style.opacity='0';setTimeout(()=>{f.style.display='none'},500)},1500)}
+  });
 }
 </script>
 </body>

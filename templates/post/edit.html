@@ -11,70 +11,93 @@
   <style>
     body {
       font-family: 'Noto Sans KR', sans-serif;
-      font-size: 16px;
+      font-size: 13px;
       line-height: 1.5;
       background-color: #fff;
       max-width: 700px;
       margin: 60px auto;
-      padding: 60px;
+      padding: 50px;
       color: #222;
     }
 
     h2 {
-      font-size: 28px;
+      font-size: 30px;
       text-align: center;
-      color: #8C0EDF;
-      font-weight: bold;
+      margin-bottom: 30px;
+    }
+   form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    p.description {
+/* form-wrapper에 대한 스타일 지정 */
+    .form-wrapper {
+      background-color: #fff;
+      border: 2px solid #8C0EDF;
+      border-radius: 12px;
+      padding: 30px 20px;
+      box-shadow: 0 0 5px #CEBCE0;
+    }
+    
+    .form-wrapper label {
+      color: #8C0EDF;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    textarea {
+      padding: 10px 12px;
       font-size: 1rem;
-      text-align: center;
-      color: #333;
-      margin-bottom: 30px;
+      border: 1px solid #c5c5c5;
+      border-radius: 6px;
+      background-color: #fff;
+      transition: border-color 0.3s;
+      box-shadow: 0 0 3px #ebebeb;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #8C0EDF;
+      box-shadow: 0 0 5px #CEBCE0;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 150px;
     }
 
 /* button css 디자인 */
-    .button-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      margin-top: 30px;
-    }
-
-    .button-group a {
-      display: inline-block;
-      padding: 10px 16px;
-      border: 2px solid #8C0EDF;
+    button {
+      padding: 12px;
+      font-size: 14px;
       background-color: #8C0EDF;
       color: #fff;
-      text-decoration: none;
+      border: 2px solid #8C0EDF;
       border-radius: 6px;
-      font-size: 15px;
+      cursor: pointer;
       font-weight: 600;
-      transition: background-color 0.3s ease;
-      width: 100%;
-      max-width: 280px;
-      text-align: center;
+      transition: background-color 0.3s;
     }
 
-    .button-group a:hover {
-      color: #8C0EDF;
-      border: 2px solid #8C0EDF;
+    button:hover {
       background-color: #fff;
-    }
-
-    .button-group a.secondary {
       color: #8C0EDF;
-      border: 2px solid #8C0EDF;
-      background-color: #fff;
     }
 
-    .button-group a.secondary:hover {
-      color: #fff;
-      border: 2px solid #fff;
-      background-color: #8C0EDF;
+/* back-link css 디자인 */
+    .back-link {
+      display: inline-block;
+      color: #8C0EDF;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .back-link:hover {
+      color: #5c0aaf;
     }
 
 /* flash-message css 디자인 */
@@ -83,11 +106,11 @@
       top: 60px;
       left: 50%;
       transform: translateX(-50%);
-      background: #F6F0FA;           
-      border: 1px solid #8C0EDF;   
+      background: #F6F0FA;
+      border: 1px solid #8C0EDF;
       padding: 10px 20px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(140, 14, 223, 0.2); 
+      box-shadow: 0 2px 8px rgba(140, 14, 223, 0.2);
       font-size: 14px;       
       font-weight: 600;      
       z-index: 9999;
@@ -100,7 +123,7 @@
     #flash-message-success p {
       margin: 0;
       font-weight: 600;
-      color: #8C0EDF;            
+      color: #8C0EDF; 
     }
 
     #flash-message-error {
@@ -108,12 +131,12 @@
       top: 60px;
       left: 50%;
       transform: translateX(-50%);
-      background: #FFF0F0;            
-      border: 1px solid #CC4444;   
+      background: #FFF0F0; 
+      border: 1px solid #CC4444;
       padding: 10px 20px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(204, 68, 68, 0.15);
-      font-size: 14px;      
+      font-size: 14px;
       font-weight: 600;      
       z-index: 9999;
       opacity: 1;
@@ -130,8 +153,6 @@
   </style>
 </head>
 <body>
-  <h2>🟣 Purple Board</h2>
-  <p class="description">Simple. Elegant. Purple Board.</p>
 
 <!-- Flask에서 전달하는 flash 메시지 표시 -->
   {% with messages = get_flashed_messages(with_categories=true) %}
@@ -148,48 +169,17 @@
     {% endif %}
   {% endwith %}
 
-  {% if session.get('username') %}
-
 <!-- CSS 디자인을 위한 클래스 정의 -->
-    <div class="button-group">
+  <div class="form-wrapper">
+    <form action="/edit/{{ post.id }}" method="POST">
+      <label for="title">Title</label>
+      <input type="text" id="title" name="title" value="{{ post.title }}" required>
 
-      <a href="/board">View Purple</a>
-      <a href="/write" class="secondary">Write a Purple</a>
-      <a href="{{ url_for('user_list') }}">View Member List</a>
-      <a href="/profile" class="secondary">My Profile</a>
-      <a href="/logout">Leave the Purple</a>
-    </div>
-  {% else %}
-    <div class="button-group">  
-      <a href="/login">Login to Purple</a>
-      <a href="/signup" class="secondary">Sign up for Purple</a>
-    </div>
-  {% endif %}
-
-<!-- 페이지 로드 후 flash 메시지 1.5초(1500ms) 뒤에 숨기기 -->
-  <script>
-    window.onload = function() {
-      const flash_s = document.getElementById('flash-message-success');
-      const flash_e = document.getElementById('flash-message-error');
-
-      if (flash_s) {
-        setTimeout(() => {
-          flash_s.style.opacity = '0';
-          setTimeout(() => {
-            flash_s.style.display = 'none';
-          }, 500);
-        }, 1500);
-      }
-
-      if (flash_e) {
-        setTimeout(() => {
-          flash_e.style.opacity = '0';
-          setTimeout(() => {
-            flash_e.style.display = 'none';
-          }, 500);
-        }, 1500);
-      }
-    }
-  </script>
+      <label for="content">Content</label>
+      <textarea id="content" name="content" rows="6" required>{{ post.content }}</textarea>
+      <button type="submit">Edit Purple</button>
+      <a href="/board" class="back-link">&#x276E; Back to Purple</a>
+    </form>
+  </div>
 </body>
 </html>

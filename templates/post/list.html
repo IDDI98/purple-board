@@ -203,7 +203,13 @@
       <tbody>
         {% for post in posts %}
         <tr>
-          <td><a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a></td>
+          <td>
+            {% if post.secret == 1 %}
+              🔒 <a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a>
+            {% else %}
+              <a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a>
+            {% endif %}
+          </td>
           <td>{{ post.author }}</td>
           <td>{{ post.created_at_display }}</td>
         </tr>

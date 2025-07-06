@@ -1,4 +1,3 @@
-<!--HTML5 문서 선언-->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -6,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Purple Board</title>
   
-<!--favicon 설정 및 웹 폰트 Noto Sans KR 적용-->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='1.01em' font-size='85'>🟣</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet" />
   <style>
@@ -21,6 +19,14 @@
       color: #222;
     }
 
+    .post-wrapper {
+      background-color: #fff;
+      border: 2px solid #8C0EDF;
+      border-radius: 12px;
+      padding: 30px 25px;
+      box-shadow: 0 0 5px #CEBCE0;
+    }
+
     .post-header {
       display: flex;
       justify-content: space-between;
@@ -31,7 +37,6 @@
       margin-bottom: 20px;
     }
 
-/* 상단에 위치하는 title 및 author 등 CSS 디자인*/
     .meta-info {
       font-size: 14px;
       color: #555;
@@ -52,23 +57,35 @@
     .meta-info .dot {
       color: #bbb;
     }
-    
-    .post-wrapper {
-      background-color: #fff;
-      border: 2px solid #8C0EDF;
-      border-radius: 12px;
-      padding: 30px 25px;
-      box-shadow: 0 0 5px #CEBCE0;
-    }
 
     .post-content {
+      position: relative;
       white-space: pre-wrap;
       font-size: 14px;
       color: #333;
       line-height: 1.6;
+      min-height: 100px;
     }
 
-/* 버튼 디자인 */    
+    .attached-file-box {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-color: #F6F0FA;
+      border: 1px solid #8C0EDF;
+      padding: 4px 8px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(140, 14, 223, 0.2);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .attached-file-box a {
+      color: #8C0EDF;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
     .button-group {
       display: flex;
       flex-direction: column;
@@ -95,7 +112,6 @@
 
     .button-group a:hover {
       color: #8C0EDF;
-      border: 2px solid #8C0EDF;
       background-color: #fff;
     }
 
@@ -107,11 +123,9 @@
 
     .button-group a.secondary:hover {
       color: #fff;
-      border: 2px solid #fff;
       background-color: #8C0EDF;
     }
 
-/* back-link css 디자인 */
     .back-link {
       display: inline-block;
       color: #8C0EDF;
@@ -124,12 +138,10 @@
     .back-link:hover {
       color: #5c0aaf;
     }
-
   </style>
 </head>
 <body>
- 
-<!-- CSS 디자인을 위한 클래스 정의 -->
+
   <div class="post-wrapper">
     <div class="post-header">
       <div class="meta-info">
@@ -140,17 +152,24 @@
         <span class="date">{{ post.created_at }}</span>
       </div>
     </div>
-  <div>
-  <div class="post-content">{{ post.content }}
 
-  </div>
+    <div class="post-content">
+      {% if post.attached_file %}
+      <div class="attached-file-box">
+        <a href="{{ url_for('uploaded_file', filename=post.attached_file) }}" download>
+           Download File  
+        </a>
+      </div>
+      {% endif %}
+      {{ post.content }}
+    </div>
 
-<!-- 버튼 클릭시 Are you sure you want to delete this?를 alert함.-->
-  <div class="button-group">
-    <a href="{{ url_for('edit_post', post_id=post.id) }}">Edit Purple</a>
-    <a href="{{ url_for('delete_post', post_id=post.id) }}" class="secondary" onclick="return confirm('Are you sure you want to delete this?');">Delete Purple</a>
+    <div class="button-group">
+      <a href="{{ url_for('edit_post', post_id=post.id) }}">Edit Purple</a>
+      <a href="{{ url_for('delete_post', post_id=post.id) }}" class="secondary" onclick="return confirm('Are you sure you want to delete this?');">Delete Purple</a>
+    </div>
+    <a href="/board" class="back-link">&#x276E; Back to Purple</a>
   </div>
-  <a href="/board" class="back-link">&#x276E; Back to Purple</a>
 
 </body>
 </html>

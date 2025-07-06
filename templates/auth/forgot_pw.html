@@ -1,0 +1,120 @@
+<!-- forgot_password.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reset Password · Purple Board</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='1.01em' font-size='85'>🟣</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+  <style>
+    body{
+      font-family:'Noto Sans KR',sans-serif;
+      font-size:13px;
+      line-height:1.5;
+      background:#fff;
+      max-width:700px;
+      margin:60px auto;
+      padding:50px;
+      color:#222
+    }
+    
+    .form-wrapper{
+      background:#fff;
+      border:2px solid #8C0EDF;
+      border-radius:12px;
+      padding:30px 20px;
+      box-shadow:0 0 5px #CEBCE0
+    }
+    
+    label{
+      color:#8C0EDF;
+      font-weight:600
+    }
+    
+    form{
+      display:flex;
+      flex-direction:column;
+      gap:16px
+    }
+    
+    input{
+      padding:10px 12px;
+      font-size:1rem;
+      border:1px solid #c5c5c5;
+      border-radius:6px;
+      background:#fff;
+      transition:border-color .3s;
+      box-shadow:0 0 3px #ebebeb
+    }
+    
+    input:focus{
+      outline:none;
+      border-color:#8C0EDF;
+      box-shadow:0 0 5px #CEBCE0
+    }
+    
+    button{
+      padding:12px;
+      font-size:14px;
+      background:#8C0EDF;
+      color:#fff;
+      border:2px solid #8C0EDF;
+      border-radius:6px;
+      cursor:pointer;
+      font-weight:600;
+      transition:.3s
+    }
+    
+    button:hover{
+      background:#fff;
+      color:#8C0EDF
+    }
+    
+    .back-link{
+      color:#8C0EDF;
+      font-weight:600;
+      text-decoration:none;
+      transition:.3s ease;
+      display:inline-block;
+      margin-top:8px
+    }
+    
+    .back-link:hover{color:#5c0aaf}
+  </style>
+</head>
+<body>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        {% if category == 'success' %}
+          <div id="flash-message-success"><p>{{ msg }}</p></div>
+        {% elif category == 'error' %}
+          <div id="flash-message-error"><p>{{ msg }}</p></div>
+        {% else %}
+          <div><p>{{ msg }}</p></div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  
+  <div class="form-wrapper">
+    <form method="POST" action="/forgot-password">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required>
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" required>
+      <button type="submit">Reset Password</button>
+      <a href="/login" class="back-link">&#x276E; Back to Login</a>
+    </form>
+  </div>
+<script>
+window.onload=function(){
+  ['flash-message-success','flash-message-error'].forEach(id=>{
+    const f=document.getElementById(id);
+    if(f){setTimeout(()=>{f.style.opacity='0';setTimeout(()=>{f.style.display='none'},500)},1500)}
+  });
+}
+</script>
+</body>
+</html>
